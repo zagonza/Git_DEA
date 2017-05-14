@@ -22,7 +22,7 @@ namespace Git_DEA
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using (var sr = new StreamReader(@"D:/data_DEA.csv"))
+            using (var sr = new StreamReader(@"D:/data_DEA_new.csv"))
             {
                 var reader = new CsvReader(sr);
 
@@ -38,71 +38,57 @@ namespace Git_DEA
                          }).ToArray();
                 List<DataRecord> ListDR = b.ToList();
 
+                //
+                foreach (DataRecord aa in ListDR)
+                {
+                    aa.intial_L_perv();
+                }
+                //
                 MessageBox.Show(ListDR.Count.ToString());
 
                 //set Before Node
                 for (int i = 0; i <= ListDR.Count - 1; i++)
                 {
-                    if (ListDR[i].work_before != "-")
+                    foreach (string before in ListDR[i].L_prev)
                     {
-                        for (int j = 0; j <= ListDR.Count - 1; j++)
-                        {
-                            if (ListDR[i].work_before == ListDR[j].work)
-                            {
-                                ListDR[i].set_Before(ListDR[j]);
-                            }
-                        }
+                        //MessageBox.Show(ListDR[i].work + " prev is "+ before);
+                        ListDR[i].set_Before(Find_Node(ListDR, before));
+                    }
+
+                }
+                //test
+                foreach (DataRecord aa in ListDR)
+                {
+                    string dogCsv = string.Join(",", aa.L_prev.ToArray());
+                    MessageBox.Show(aa.work + " prev is " + dogCsv);
+                    if (aa.L_prev.Count > 1)
+                    {
+                        MessageBox.Show(aa.work + "Has prev more than 1 it has : " + aa.L_prev.Count);
                     }
                 }
+
                 //set After Node
-                for (int i = 0; i <= ListDR.Count - 1; i++)
+                foreach (DataRecord record in ListDR)
                 {
-                    if (ListDR[i].work_before != "-")
+                    foreach (string before in record.L_prev)
                     {
-                        for (int j = 0; j <= ListDR.Count - 1; j++)
+                        if (before != "-")
                         {
 
-                            Find_Node(ListDR, ListDR[i].work_before).set_After(ListDR[i]);
+                            Find_Node(ListDR, before).set_After(record);
+                            //MessageBox.Show(record.work + " next is " + before);
                         }
                     }
                 }
-                //
-                for (int i = 0; i <= ListDR.Count - 1; i++)
+                //test
                 {
-                    string before = "";
-                    string after = "";
-                    if (ListDR[i].hasbefore())
+                    foreach (DataRecord aa in ListDR)
                     {
-                        before = ListDR[i].get_Before().work;
-                        //Debug.Print(ListDR[i].work + " before is " + ListDR[i].get_Before().work + " after is " + ListDR[i].get_After().work);
-                    }
-                    else
-                    {
-                        before = null;
-                        //Debug.Print(ListDR[i].work + " before is null");
-                    }
-                    if (ListDR[i].hasafter())
-                    {
-                        after = ListDR[i].get_After().work;
-                    }
-                    else
-                    {
-                        after = null;
-                    }
-                    Debug.Print(ListDR[i].work + " before is " + before + " after is " + after);
-                }
-
-                //check time
-                int time = 17;
-
-                for (int i = 0; i <= ListDR.Count - 1; i++)
-                {
-                    if (ListDR[i].hasbefore())
-                    {
-                        if (ListDR[i].time + ListDR[i].get_Before().time > 17)
+                        foreach (DataRecord aaa in aa.get_After())
                         {
-
+                            MessageBox.Show(aa.work + " after is " + aaa.work);
                         }
+
                     }
                 }
             }
