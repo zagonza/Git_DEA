@@ -88,7 +88,6 @@ namespace Git_DEA
                         {
                             MessageBox.Show(aa.work + " after is " + aaa.work);
                         }
-
                     }
                 }
             }
