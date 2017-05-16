@@ -19,7 +19,7 @@ namespace Git_DEA
         {
             InitializeComponent();
         }
-
+        /*
         private void button1_Click(object sender, EventArgs e)
         {
             using (var sr = new StreamReader(@"D:/data_DEA_new.csv"))
@@ -106,7 +106,22 @@ namespace Git_DEA
             }
             return output;
         }
+        */
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Flow flow = new Flow(@"D:/data_DEA_new.csv");
+            List<DataRecord> LDR = flow.getList();
 
+            foreach (DataRecord aa in LDR)
+            {
+                foreach (DataRecord aaa in aa.get_After())
+                {
+                    MessageBox.Show(aa.work + " after is " + aaa.work);
+                }
+            }
+
+            flow.Combination(17); 
+        }
     }
 }
 
