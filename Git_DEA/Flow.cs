@@ -11,6 +11,9 @@ namespace Git_DEA
     {
         
         List<DataRecord> ListDR;
+        List<int> dup_subindex;
+        List<List<string>> buffer = new List<List<string>>();
+        public Flow() { }
         public Flow(string pathcsv)
         {
             using (var sr = new StreamReader(@"D:/data_DEA_new.csv"))
@@ -104,7 +107,7 @@ namespace Git_DEA
                     foreach (DataRecord a in result)
                     {
                         //Debug.Write(a.work + ",");
-                        
+
                     }
                     counts++;
                     //Debug.Write("\t" + sum);
@@ -114,44 +117,174 @@ namespace Git_DEA
 
             //find max member from Combinating
             int max_member = 0;
-            foreach(List<DataRecord> a in Resultlist)
+            foreach (List<DataRecord> a in Resultlist)
             {
-                if(a.Count > max_member)
+                if (a.Count > max_member)
                 {
                     max_member = a.Count;
                 }
             }
             Debug.WriteLine("max member is " + max_member);
-
-
-
-            List<List<DataRecord>> Resultlist2 = new List<List<DataRecord>>();
+            //group by member of data
+            List<List<List<DataRecord>>> Resultlist2 = new List<List<List<DataRecord>>>();
+            List<List<DataRecord>> buffer = new List<List<DataRecord>>();
             for (int i = 1; i <= max_member; i++)
             {
-               
+                buffer = new List<List<DataRecord>>();
                 foreach (List<DataRecord> a in Resultlist)
                 {
-
                     if (a.Count == i)
                     {
-                        if(i == 1)
-                        {
-                            Resultlist2.Add(a);
-                        }
-                        foreach (DataRecord b in a)
-                        {
-                            Debug.Write(b.work + ",");
-                        }
-                        Debug.WriteLine("");
+                        buffer.Add(a);
+                        Debug.WriteLine("a is " + a.Count);
                     }
-                }             
+                }
+                Resultlist2.Add(buffer);
             }
-            Debug.WriteLine(counts);
+            //test
+            Debug.WriteLine("buffer is " + buffer.Count);
+            Debug.WriteLine(" Resultlist2 is " + Resultlist2.Count);
+            foreach (List<List<DataRecord>> aa in Resultlist2)
+            {
+                foreach (List<DataRecord> ldr in aa)
+                {
+                    Debug.Write("{");
+                    foreach (DataRecord dr in ldr)
+                    {
+                        Debug.Write(dr.work);
+                    }
+                    Debug.Write("}");
+                }
+                Debug.WriteLine("");
+            }
+
+            //
+            List<List<List<DataRecord>>> CombineList = new List<List<List<DataRecord>>>();
+            for(int i = 0; i<= Resultlist2.Count-1; i++)
+            {
+                if(i == 0 ) // 1 member
+                {
+                    CombineList.Add(Resultlist2[i]);
+                }
+                else
+                {
+                    
+                }
+            }
         }
+
+
+        public bool compare_List(List<List<string>> source, List<string> target)
+        {
+            List<bool> chk = new List<bool>();
+
+            bool output = false;
+            dup_subindex = new List<int>();
+            Remove_item ret = new Remove_item();
+            
+            foreach (string t in target)
+            {
+                int i = 0;
+                
+                foreach (List<string> ls in source)
+                {
+
+                        foreach (string d in ls)
+                        {
+                            if (d == t)
+                            {
+                                Debug.Write("Source is : " + d + " Target is : " + t);
+                                output = true;
+                                dup_subindex.Add(i);
+                                ret.index_remove.Add(i);
+                                //Debug.WriteLine(" i : " + i);
+                                goto endloop;
+                                //break;
+                            }
+                            else
+                            {
+                                //Debug.Write("Source is : " + d + " Target is : " + t);
+                                output = false;
+                            }
+                        }
+                        i++;
+                    
+                    
+                }
+                endloop:
+                Debug.WriteLine("");
+                chk.Add(output);
+                
+            }
+            
+            foreach (bool a in chk)
+            {
+                Debug.WriteLine(a);
+                if (a == false)
+                {
+                    output = false;
+                    break;
+                }
+            }
+
+            foreach(int i in dup_subindex)
+            {
+                Debug.WriteLine("dup is "+i);
+            }
+            return output;
+        }
+
 
         public List<DataRecord> getList()
         {
             return ListDR;
         }
+         public List<int> getDup()
+        {
+            return dup_subindex;
+        }
     }
 }
+
+
+
+/* backup
+public bool compare_List(List<List<string>> source, List<string> target)
+{
+    List<bool> chk = new List<bool>();
+
+    bool output = false;
+    dup_subindex = new List<int>();
+    foreach (string t in target)
+    {
+        int i = 0;
+
+        foreach (List<string> ls in source)
+        {
+
+            foreach (string d in ls)
+            {
+                if (d == t)
+                {
+                    Debug.Write("Source is : " + d + " Target is : " + t);
+                    output = true;
+                    dup_subindex.Add(i);
+                    //Debug.WriteLine(" i : " + i);
+                    goto endloop;
+                    //break;
+                }
+                else
+                {
+                    //Debug.Write("Source is : " + d + " Target is : " + t);
+                    output = false;
+                }
+            }
+            i++;
+
+
+        }
+        endloop:
+        Debug.WriteLine("");
+        chk.Add(output);
+
+    }*/
